@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 const roundsOfHashing = 10;
 
 async function main() {
-  const passwordAdmin = await bcrypt.hash('password-sabin', roundsOfHashing);
+  const passwordAdmin = await bcrypt.hash('admin3264', roundsOfHashing);
   // creacion de roles
   const roleDev = await prisma.role.upsert({
     where: { roleId: 1 },

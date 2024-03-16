@@ -6,7 +6,11 @@ import {
 import { PrismaService } from 'nestjs-prisma';
 import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from './entity/auth.entity';
+import { CreateAuthDto } from './dto/create-auth.dto';
+import { UpdateAuthDto } from './dto/update-auth.dto';
+import * as bcrypt from 'bcrypt';
 
+export const roundsOfHashing = 10;
 @Injectable()
 export class AuthService {
   constructor(
@@ -26,7 +30,8 @@ export class AuthService {
     }
 
     // Step 2: Check if the password is correct
-    const isPasswordValid = user.password === password;
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log(password);
 
     // If password does not match, throw an error
     if (!isPasswordValid) {
@@ -40,5 +45,31 @@ export class AuthService {
         roleId: user.roleId,
       }),
     };
+  }
+
+  async signup(createAuthDto: CreateAuthDto) {
+    const hashedPassword = await bcrypt.hash(
+      createAuthDto.password,
+      roundsOfHashing,
+    );
+
+    createAuthDto.password = hashedPassword;
+    return await this.prisma.auth.create({ data: createAuthDto });
+  }
+
+  async findOne(username: string) {
+    return await this.prisma.auth.findUnique({ where: { username } });
+  }
+  async update(username: string, updateAuthDto: UpdateAuthDto) {
+    if (updateAuthDto.password) {
+      updateAuthDto.password = await bcrypt.hash(
+        updateAuthDto.password,
+        roundsOfHashing,
+      );
+    }
+    return await this.prisma.auth.update({
+      where: { username },
+      data: updateAuthDto,
+    });
   }
 }

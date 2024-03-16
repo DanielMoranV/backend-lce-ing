@@ -6,7 +6,6 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
-  IsObject,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -78,12 +77,4 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsInt()
   positionId: number;
-
-  @ApiProperty()
-  @IsObject()
-  auth: {
-    username: string;
-    password: string;
-    roleId: number;
-  };
 }

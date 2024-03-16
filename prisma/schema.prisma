@@ -28,7 +28,7 @@ model User {
   online       Boolean?  @map(name: "online")
   deleted      Boolean?  @default(false) @map(name: "deleted")
   deletedAt    DateTime? @map(name: "deleted_at")
-  positionId   Int?
+  positionId   Int
 
   auth            Auth[]
   CompanyPosition CompanyPosition? @relation(fields: [positionId], references: [positionId])
