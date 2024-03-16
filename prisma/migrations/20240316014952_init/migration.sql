@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "auth" ALTER COLUMN "token" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "user" ALTER COLUMN "sex" DROP NOT NULL,
+ALTER COLUMN "address" DROP NOT NULL,
+ALTER COLUMN "profile_photo" DROP NOT NULL;

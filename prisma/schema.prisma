@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users
+model User {
+  userId       Int       @id @default(autoincrement()) @map(name: "user_id")
+  name         String    @map(name: "name")
+  surname      String    @map(name: "surname")
+  email        String    @unique @map(name: " email")
+  sex          String?   @map(name: "sex")
+  documentType String    @map(name: "document_type")
+  dni          String    @unique @map(name: "dni")
+  phoneNumber  String    @map(name: "phone_number")
+  address      String?   @map(name: "address")
+  profilePhoto String?   @map(name: "profile_photo")
+  online       Boolean?  @map(name: "online")
+  deleted      Boolean?  @default(false) @map(name: "deleted")
+  deletedAt    DateTime? @map(name: "deleted_at")
+  positionId   Int?
+
+  auth            Auth[]
+  CompanyPosition CompanyPosition? @relation(fields: [positionId], references: [positionId])
+
+  @@map(name: "user")
+}
+
+model Auth {
+  authId   Int     @id @default(autoincrement()) @map(name: "auth_id")
+  userId   Int     @map(name: "user_id")
+  token    String? @map(name: "token")
+  username String  @unique @map(name: "username")
+  password String  @map(name: "password")
+  roleId   Int?
+
+  user User  @relation(fields: [userId], references: [userId])
+  Role Role? @relation(fields: [roleId], references: [roleId])
+
+  @@map(name: "auth")
+}
+
+model Role {
+  roleId       Int            @id @default(autoincrement()) @map(name: "rol_id")
+  nombre       String         @unique @map(name: "name")
+  estado       Boolean        @default(true) @map(name: "estado")
+  userAuth     Auth[]
+  RolebyModule RolebyModule[]
+
+  @@map(name: "role")
+}
+
+model CompanyPosition {
+  positionId Int    @id @default(autoincrement()) @map(name: "position_id")
+  name       String @unique @map(name: "name")
+  areaId     Int    @map(name: "areaId")
+
+  users       User[]
+  CompanyArea CompanyArea? @relation(fields: [areaId], references: [areaId])
+
+  @@map(name: "company_position")
+}
+
+model CompanyArea {
+  areaId          Int               @id @default(autoincrement()) @map(name: "area_id")
+  name            String            @unique @map(name: "nombre")
+  CompanyPosition CompanyPosition[]
+
+  @@map(name: "company_area")
+}
+
+// Grupos y modulos del sistema
+model GroupofModules {
+  groupId Int      @id @default(autoincrement()) @map(name: "group_id")
+  name    String   @unique @map(name: "name")
+  status  Boolean  @default(true) @map(name: "status")
+  icon    String   @map(name: "icon")
+  modules Module[]
+
+  @@map(name: "group_of_modules")
+}
+
+model Module {
+  moduleId     Int             @id @default(autoincrement()) @map(name: "module_id")
+  name         String          @unique @map(name: "name")
+  status       Boolean         @default(true) @map(name: "status")
+  icon         String          @map(name: "icon")
+  groupId      Int?            @map(name: "grupos_id")
+  Groups       GroupofModules? @relation(fields: [groupId], references: [groupId])
+  RolebyModule RolebyModule[]
+
+  @@map(name: "module")
+}
+
+model RolebyModule {
+  roleId   Int @map(name: "role_id")
+  moduleId Int @map(name: "module_id")
+
+  Module Module @relation(fields: [moduleId], references: [moduleId])
+  Role   Role?  @relation(fields: [roleId], references: [roleId])
+
+  @@id([roleId, moduleId])
+  @@map(name: "role_by_module")
+}
