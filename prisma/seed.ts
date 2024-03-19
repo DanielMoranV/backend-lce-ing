@@ -54,6 +54,7 @@ async function main() {
       username: '70315050',
       password: passwordAdmin,
       userId: 1,
+      roleId: 1,
     },
   });
 

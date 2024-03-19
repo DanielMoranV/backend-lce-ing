@@ -24,6 +24,7 @@ async function bootstrap() {
     .setTitle('API REST Medical System')
     .setDescription('The MS API description')
     .setVersion('0.1')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

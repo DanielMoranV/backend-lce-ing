@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -54,6 +55,12 @@ export class AuthService {
     );
 
     createAuthDto.password = hashedPassword;
+    const user = await this.prisma.auth.findUnique({
+      where: { username: createAuthDto.username },
+    });
+    if (user) {
+      throw new BadRequestException('User already exists');
+    }
     return await this.prisma.auth.create({ data: createAuthDto });
   }
 
