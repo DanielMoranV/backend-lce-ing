@@ -79,4 +79,7 @@ export class AuthService {
       data: updateAuthDto,
     });
   }
+  async getAuthRole(username: string) {
+    return await this.prisma.auth.findUnique({ where: { username } });
+  }
 }
